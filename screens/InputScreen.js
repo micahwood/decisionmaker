@@ -43,11 +43,18 @@ export default class InputScreen extends Component {
   }
 
   openWheel() {
+    let options = this.state.options.filter((option) => option !== '');
+
+    // Make a 2 choice wheel a little more interesting by dividing it in 6ths
+    if (options.length === 2) {
+      options = options.concat(options, options);
+    }
+
     this.props.navigator.showModal({
       screen: 'decision.WheelScreen',
       title: 'The Wheel of Decision',
       passProps: {
-        options: this.state.options.filter((option) => option !== '')
+        options
       }
     });
   }

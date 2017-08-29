@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import {
   Animated,
   Button,
+  Dimensions,
   Easing,
   StyleSheet,
   Text,
@@ -29,7 +30,7 @@ export default class InputScreen extends Component {
     rotateAnim: new Animated.Value(0),
     previousValue: 0,
     wheel: null,
-    selected: ''
+    selected: ' '
   }
 
   getRandomColor() {
@@ -95,6 +96,30 @@ export default class InputScreen extends Component {
     this.spinWheel(gesture.vx, true);
   }
 
+  onSwipeUp(gesture) {
+    if (this.swipeSide(gesture.x0) === 'left') {
+      this.spinWheel(gesture.vy);
+    } else {
+      this.spinWheel(gesture.vy, true);
+    }
+  }
+
+  onSwipeDown(gesture) {
+    if (this.swipeSide(gesture.x0) === 'left') {
+      this.spinWheel(gesture.vy, true);
+    } else {
+      this.spinWheel(gesture.vy);
+    }
+  }
+
+  swipeSide(xPos) {
+    const {width} = Dimensions.get('window');
+    if ((width / xPos) > 2) {
+      return 'left';
+    }
+    return 'right';
+  }
+
   render() {
     let { rotateAnim, selected } = this.state;
     let interpolateAnim = rotateAnim.interpolate({
@@ -105,7 +130,9 @@ export default class InputScreen extends Component {
     return (
       <GestureRecognizer style={styles.container}
         onSwipeRight={(state) => this.onSwipeRight(state)}
-        onSwipeLeft={(state) => this.onSwipeLeft(state)}>
+        onSwipeLeft={(state) => this.onSwipeLeft(state)}
+        onSwipeUp={(state) => this.onSwipeUp(state)}
+        onSwipeDown={(state) => this.onSwipeDown(state)}>
         <TriangleDown/>
         <Animated.View style={{transform: [{rotate: interpolateAnim}]}}>
           <Canvas ref={this.handleCanvas.bind(this)} />
